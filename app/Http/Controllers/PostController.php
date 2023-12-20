@@ -51,21 +51,26 @@ class PostController extends Controller
 
    public function store(Request $request)
    {
-    //Apply the 'auth' middleware to ensure only authenticated users can access this method
-     $this->middleware('auth');
-
-    //  check if user is authenticated
-     if(!auth()->check()){
-        return response()->json(['message'=>'Unauthorized. Please log in.'], 401);
-     }
       // Create a new post and associate it with the authenticated user
      $post = Post::create([
         'title'=>$request->input('title'),
         'content'=>$request->input('content'),
         'user_id'=>auth()->id(),
      ]);
-     return response()->json(['message'=>'Post created successfully', 'post'=>$post]);
+     return response()->json(['post'=>$post]);
    }
+
+  //Update a post
+  public function update(Request $request, $id)
+  {
+    $post = Post::find($id);
+    if($post){
+        $post->update($request->all());
+        return response()->json(['message' => 'Post updated successfully']);
+    }else{
+        return response()->json(['message'=> 'Post not found']);
+    }
+  }     
    
    //Delete a record    
    public function destroy($id)
